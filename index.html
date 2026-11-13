@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>MARLBORO OSINT | Açık Kaynak Paneli</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b0d;--panel:#151518;--red:#e52b36;--muted:#a5a5ad;--line:#542027}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#291014 0,#0b0b0d 48%);color:#f7f7f8;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header,main,footer{width:min(960px,calc(100% - 28px));margin:auto}
+header{padding:30px 0 18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:13px}.mark{width:48px;height:48px;border:1px solid var(--red);border-radius:14px;display:grid;place-items:center;color:var(--red);font-size:24px;font-weight:900}
+h1{font-size:clamp(23px,5vw,34px);line-height:1;margin:0;letter-spacing:1.5px} .sub{color:var(--muted);font-size:13px;margin-top:6px}
+.pill{border:1px solid #326b48;color:#8ce0a8;border-radius:99px;padding:5px 10px;font-size:12px;white-space:nowrap}
+.hero,.card{background:linear-gradient(145deg,#19191d,#111114);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 12px 35px #0005}
+.hero{margin:10px 0 18px}.hero h2{margin:0 0 6px;font-size:21px}.hero p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.card h3{margin:0 0 4px;font-size:17px}.card p{margin:0 0 14px;color:var(--muted);font-size:13px}
+.icon{color:var(--red);font-size:23px;margin-bottom:8px}
+label{display:block;font-size:13px;color:#d8d8dc;margin:10px 0 5px}
+input{width:100%;background:#0b0b0e;color:white;border:1px solid #414148;border-radius:10px;padding:12px;font:inherit;outline:none}
+input:focus{border-color:var(--red);box-shadow:0 0 0 3px #e52b3622}
+button{border:0;border-radius:10px;background:var(--red);color:white;font:600 14px inherit;padding:11px 14px;margin-top:10px;cursor:pointer;width:100%}
+button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}
+.result{margin-top:10px;padding:10px;border-radius:10px;background:#242429;color:#eee;font-size:13px;min-height:0}
+.note{color:var(--muted);font-size:12px;margin-top:9px}
+footer{padding:22px 0 35px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:640px){.grid{grid-template-columns:1fr}header{align-items:flex-start}.pill{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="mark">M</div><div><h1>MARLBORO OSINT</h1><div class="sub">AÇIK KAYNAK ARAŞTIRMA PANELİ · V1</div></div></div>
+ <span class="pill">GÜVENLİ DEMO</span>
+</header>
+<main>
+ <section class="hero"><h2>Hoş geldin</h2><p>Herkese açık web ve harita kaynaklarında arama yap. Bu panel özel kişi kayıtlarına veya gizli veri tabanlarına erişmez.</p></section>
+ <section class="grid">
+  <article class="card">
+   <div class="icon">⌕</div><h3>İsim – Soyisim Arama</h3><p>İsimle eşleşen herkese açık web sayfalarını ara.</p>
+   <label for="person">İsim ve soyisim</label><input id="person" placeholder="Örnek: Ada Yılmaz" autocomplete="off">
+   <button onclick="searchPerson()">Açık web'de ara</button>
+   <div class="note">Sonuçlar kimlik doğrulaması değildir. Aynı isimde farklı kişiler olabilir.</div>
+  </article>
+  <article class="card">
+   <div class="icon">⌖</div><h3>Adres / İşletme Arama</h3><p>Herkese açık işletme, kurum ve mekânları haritada ara.</p>
+   <label for="place">İşletme veya kurum adı</label><input id="place" placeholder="Örnek: Diyarbakır müzesi" autocomplete="off">
+   <button onclick="searchMap('place')">Haritada ara</button>
+   <div class="note">Özel kişilerin ikamet adreslerini bulmak için kullanılamaz.</div>
+  </article>
+  <article class="card">
+   <div class="icon">▤</div><h3>Sokak / Cadde Arama</h3><p>Herkese açık sokak ve cadde konumlarını haritada aç.</p>
+   <label for="street">Sokak veya cadde</label><input id="street" placeholder="Örnek: Gazi Caddesi" autocomplete="off">
+   <button onclick="searchMap('street')">Haritada ara</button>
+  </article>
+  <article class="card">
+   <div class="icon">▣</div><h3>Plaka Biçim Kontrolü</h3><p>Yalnızca Türkiye plaka yazım biçimini yaklaşık kontrol eder.</p>
+   <label for="plate">Plaka</label><input id="plate" placeholder="Örnek: 21 ABC 123" maxlength="12" autocomplete="off">
+   <button onclick="checkPlate()">Plakayı kontrol et</button><div class="result" id="plateResult" aria-live="polite"></div>
+   <div class="note">Araç sahibini, adresini veya ruhsat kayıtlarını sorgulamaz.</div>
+  </article>
+  <article class="card">
+   <div class="icon">☎</div><h3>Telefon Biçim Kontrolü</h3><p>Girilen numaranın Türkiye mobil numarası biçimine uyup uymadığını kontrol eder.</p>
+   <label for="phone">Telefon numarası</label><input id="phone" placeholder="Örnek: 05XX XXX XX XX" inputmode="tel" autocomplete="off">
+   <button onclick="checkPhone()">Biçimi kontrol et</button><div class="result" id="phoneResult" aria-live="polite"></div>
+   <div class="note">Numaranın kime ait olduğunu bulmaz. Gerçek numaraları paylaşma.</div>
+  </article>
+  <article class="card">
+   <div class="icon">♙</div><h3>İzinli Aile Rehberi</h3><p>Aile üyelerinin kendi rızalarıyla paylaştığı iletişim bilgilerini kendi güvenli rehberinde tut.</p>
+   <div class="result">Bu sürümde kayıt veya kişi bulma özelliği yoktur. Aile ilişkilerini gizlice araştırmaz.</div>
+   <div class="note">Bu demo herhangi bir kişisel veriyi kaydetmez.</div>
+  </article>
+ </section>
+ <section class="hero" style="margin-top:16px"><strong>Gizlilik notu</strong><p style="margin-top:6px">Aramalar ilgili herkese açık arama motoruna yönlendirilir. Bu sayfa TC kimlik numarası, özel adres, aile bağı veya araç sahibi sorgulaması yapmaz.</p></section>
+</main>
+<footer>MARLBORO OSINT · V1 · Açık kaynak ve gizlilik odaklı demo</footer>
+<script>
+function value(id){return document.getElementById(id).value.trim()}
+function searchPerson(){const q=value('person');if(!q)return alert('İsim ve soyisim yaz.');window.open('https://www.google.com/search?q='+encodeURIComponent('"'+q+'"'),'_blank','noopener')}
+function searchMap(id){const q=value(id);if(!q)return alert('Aramak istediğin yeri yaz.');window.open('https://www.google.com/maps/search/'+encodeURIComponent(q),'_blank','noopener')}
+function checkPlate(){const p=value('plate').toLocaleUpperCase('tr-TR').replace(/\\s/g,'');const ok=/^(0[1-9]|[1-7][0-9]|8[01])[A-Z]{1,3}[0-9]{2,4}$/.test(p);document.getElementById('plateResult').textContent=ok?'Biçim Türkiye plaka düzenine uygun görünüyor. Bu, araç kaydını doğrulamaz.':'Biçim uygun görünmüyor. Yazımı kontrol et.'}
+function checkPhone(){const p=value('phone').replace(/[\\s()-]/g,'');const ok=/^(?:\\+90|0)?5\\d{9}$/.test(p);document.getElementById('phoneResult').textContent=ok?'Numara biçimi Türkiye mobil numara düzenine uygun görünüyor. Sahibini doğrulamaz.':'Numara biçimi uygun görünmüyor.'}
+</script>
+</body>
+</html>
